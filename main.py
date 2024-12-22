@@ -35,10 +35,7 @@ df = pd.DataFrame(data)
 st.title("Risk Assessment Dashboard")
 st.markdown("### Overview of Security Risks and Their Financial Impact")
 
-# Metrics - Key Statistics
-col3 = st.columns(3)
-with col3:
-    st.metric("Number of Risk Factors", len(df))
+
 
 # Create two columns for the layout
 left_column, right_column = st.columns([2, 1])

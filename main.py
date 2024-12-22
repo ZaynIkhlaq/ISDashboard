@@ -15,11 +15,11 @@ data = {
               'Revenue Management System', 'IT Hardware', 'Reputation', 'Staff'],
     'Vulnerability': ['Human Error', 'SQL Injection', 'Cross-Site Scripting', 
                      'Denial of Services', 'Power Interruptions', 'Data Breach', 'Social Engineering'],
-    'Asset_Value': [5, 5 ,3 ,3 ,2 ,5 ,2],  # Updated values
-    'Exposure_Factor': [8,8,7,6,9,6,9],
-    'Base_Value': ['1,000,000','1,000,000','100,000 to 500,000','100,000 to 500,000','10,000 to 100,000','1,000,000','10,000 to 100,000',],
-    'ALE': ['12,000,000','12,000,000','400,000 to 2,000,000','100,000 to 500,000','480,000 to 4,800,000','1,000,000','480,000 to 4,800,000'],
-    'ARO_Description': ['Monthly','Monthly','Quarterly','Annually','Weekly','Annually','Weekly'],
+    'Asset_Value': [5, 5, 3, 3, 2, 5, 2],
+    'Exposure_Factor': [0.8, 0.8, 0.7, 0.6, 0.9, 0.6, 0.9],  # Changed to decimal
+    'Base_Value': [1000000, 1000000, 300000, 300000, 50000, 1000000, 50000],  # Simplified to numbers
+    'ARO': [12, 12, 4, 1, 52, 1, 52],  # Added ARO numeric values
+    'ARO_Description': ['Monthly', 'Monthly', 'Quarterly', 'Annually', 'Weekly', 'Annually', 'Weekly'],
     'Justification': ['Top risk from mental stress and physical fatigue',
                      'Requires firewall and intrusion prevention',
                      'Needs Data Leakage Prevention systems',
@@ -31,11 +31,22 @@ data = {
 
 df = pd.DataFrame(data)
 
+# Calculate ALE
+df['ALE'] = df['Base_Value'] * df['Exposure_Factor'] * df['ARO']
+
 # Title and description
 st.title("Risk Assessment Dashboard")
 st.markdown("### Overview of Security Risks and Their Financial Impact")
 
+# Metrics - Key Statistics
+col1, col2, col3 = st.columns(3)
 
+with col1:
+    st.metric("Total Annual Loss Expectancy", f"£{df['ALE'].sum():,.0f}")
+with col2:
+    st.metric("Highest Risk Asset", df.loc[df['ALE'].idxmax(), 'Asset'])
+with col3:
+    st.metric("Number of Risk Factors", len(df))
 
 # Create two columns for the layout
 left_column, right_column = st.columns([2, 1])
@@ -51,7 +62,11 @@ with left_column:
         labels={'ALE': 'Annual Loss Expectancy (£)'},
         hover_data=['ARO_Description', 'Justification']
     )
-    fig_ale.update_layout(xaxis_tickangle=-45)
+    fig_ale.update_layout(
+        xaxis_tickangle=-45,
+        yaxis_title='Annual Loss Expectancy (£)',
+        height=400
+    )
     st.plotly_chart(fig_ale, use_container_width=True)
 
     # Risk Matrix
@@ -61,9 +76,7 @@ with left_column:
         y=df['Asset_Value'],
         mode='markers+text',
         marker=dict(
-            size=df['ALE'] / 1000000,  # Size proportional to ALE
-            sizemode='area',
-            sizeref=0.1,
+            size=(df['ALE'] / df['ALE'].max() * 50) + 10,  # Normalized size
             color=df['ARO'],
             colorscale='Viridis',
             showscale=True,
@@ -72,14 +85,15 @@ with left_column:
         text=df['Vulnerability'],
         textposition="top center",
         hovertemplate="<b>%{text}</b><br>" +
-                      "Exposure Factor: %{x}<br>" +
+                      "Exposure Factor: %{x:.1%}<br>" +  # Format as percentage
                       "Asset Value: %{y}<br>" +
                       "<extra></extra>"
     ))
     fig_matrix.update_layout(
-        title='Risk Matrix (Bubble size represents ALE)',
+        title='Risk Matrix (Bubble size represents relative ALE)',
         xaxis_title='Exposure Factor',
         yaxis_title='Asset Value',
+        height=400,
         showlegend=False
     )
     st.plotly_chart(fig_matrix, use_container_width=True)
@@ -87,9 +101,9 @@ with left_column:
 with right_column:
     # Risk Details Table
     st.subheader("Risk Details")
+    display_df = df[['Asset', 'Vulnerability', 'ARO_Description', 'ALE', 'Justification']].copy()
     st.dataframe(
-        df[['Asset', 'Vulnerability', 'ARO_Description', 'ALE', 'Justification']]
-        .sort_values('ALE', ascending=False)
+        display_df.sort_values('ALE', ascending=False)
         .style.format({'ALE': '£{:,.0f}'})
     )
 
@@ -108,7 +122,7 @@ with right_column:
         with st.expander(f"{row['Asset']} - {row['Vulnerability']}"):
             st.write(f"**Base Value:** £{row['Base_Value']:,.0f}")
             st.write(f"**Exposure Factor:** {row['Exposure_Factor']:.1%}")
-            st.write(f"**Annual Rate:** {row['ARO']} ({row['ARO_Description']})")
+            st.write(f"**Annual Rate:** {row['ARO']} times per year ({row['ARO_Description']})")
             st.write(f"**Annual Loss Expectancy:** £{row['ALE']:,.0f}")
             st.write(f"**Justification:** {row['Justification']}")
 

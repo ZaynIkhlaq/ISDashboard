@@ -36,11 +36,7 @@ st.title("Risk Assessment Dashboard")
 st.markdown("### Overview of Security Risks and Their Financial Impact")
 
 # Metrics - Key Statistics
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Total Annual Loss Expectancy", f"£{df['ALE'].sum():,.0f}")
-with col2:
-    st.metric("Highest Single Loss", f"£{df['ALE'].max():,.0f}")
+col3 = st.columns(3)
 with col3:
     st.metric("Number of Risk Factors", len(df))
 

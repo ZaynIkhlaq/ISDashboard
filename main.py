@@ -15,12 +15,11 @@ data = {
               'Revenue Management System', 'IT Hardware', 'Reputation', 'Staff'],
     'Vulnerability': ['Human Error', 'SQL Injection', 'Cross-Site Scripting', 
                      'Denial of Services', 'Power Interruptions', 'Data Breach', 'Social Engineering'],
-    'Asset_Value': [5, 5, 3, 3, 2, 5, 2],  # Updated values
-    'Exposure_Factor': [0.7, 0.6, 0.8, 0.5, 0.7, 0.6, 0.8],
-    'Base_Value': [3500000, 3000000, 2400000, 1500000, 1400000, 3000000, 1600000],
-    'ARO': [8, 6, 7, 6, 9, 6, 9],
-    'ALE': [28000000, 18000000, 16800000, 9000000, 12600000, 18000000, 14400000],
-    'ARO_Description': ['Quarterly', 'Annually', 'Quarterly', 'Annually', 'Monthly', 'Annually', 'Monthly'],
+    'Asset_Value': [5, 5 ,3 ,3 ,2 ,5 ,2],  # Updated values
+    'Exposure_Factor': [8,8,7,6,9,6,9],
+    'Base_Value': ['1,000,000','1,000,000','100,000 to 500,000','100,000 to 500,000','10,000 to 100,000','1,000,000','10,000 to 100,000',],
+    'ALE': ['12,000,000','12,000,000','400,000 to 2,000,000','100,000 to 500,000','480,000 to 4,800,000','1,000,000','480,000 to 4,800,000'],
+    'ARO_Description': ['Monthly','Monthly','Quarterly','Annually','Weekly','Annually','Weekly'],
     'Justification': ['Top risk from mental stress and physical fatigue',
                      'Requires firewall and intrusion prevention',
                      'Needs Data Leakage Prevention systems',
